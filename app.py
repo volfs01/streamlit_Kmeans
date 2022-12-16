@@ -19,13 +19,34 @@ def main() :
     file = st.file_uploader('csv파일업로드 ', type='csv')
     
     if file is not None :
-        df = pd.read_csv(file)    
+        df = pd.read_csv(file)  
+        df = df.dropna()  
         st.dataframe(df)
+        
+    
+    df = df.dropna()
+       
         
     columns = df.columns
     select = st.multiselect('X로 사용할 컬럼을 선택하시오' ,columns)
-    X = df[select]
-    st.dataframe(X)
+    
+    
+    from sklearn.preprocessing import LabelEncoder , OneHotEncoder
+    from sklearn.compose import ColumnTransformer
+    
+    X = [ ]
+    
+    if df[select].nunique() > 2 :
+        ct = ColumnTransformer( [ ( 'encoder' ,OneHotEncoder() , [df[select]] ) ], remainder ='passthrough')
+        X.append(ct.fit_transform(X))
+    else :
+        encoder  = LabelEncoder()
+        X.append(encoder.fit_transform(df[select]))
+                
+            
+        st.dataframe(X)
+    
+    
     
     st.subheader('WCSS를 위한 클러스터링 개수를 선택하시오')
     clustering_counts = st.slider('최대 그룹 선택' , 2,20 ,value=10)
