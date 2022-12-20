@@ -36,12 +36,21 @@ def main() :
     
     X = [ ]
     
-    if df[select].nunique() > 2 :
-        ct = ColumnTransformer( [ ( 'encoder' ,OneHotEncoder() , [df[select]] ) ], remainder ='passthrough')
-        X.append(ct.fit_transform(X))
-    else :
-        encoder  = LabelEncoder()
-        X.append(encoder.fit_transform(df[select]))
+    X = []
+    for data in select :
+        if df[data].nunique() > 0 :
+            if type(df.loc[ :,data][4]) == type(df['points'][4]) or type(df.loc[ :,data][4]) == type(df['price'][4]) :
+                pass
+            else :
+                encoder  = LabelEncoder()
+                X.append(encoder.fit_transform(df[data]))
+            
+        elif df[data].nunique() > 2 :
+            if type(df.loc[ :,data][4]) == type(df['points'][4]) or type(df.loc[ :,data][4]) == type(df['price'][4]) :
+                pass
+            else :
+                ct = ColumnTransformer( [ ( 'encoder' ,OneHotEncoder() , [0] ) ] , remainder ='passthrough')
+                X.append(ct.fit_transform(df[data]))
                 
             
         st.dataframe(X)
